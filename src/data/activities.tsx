@@ -1,0 +1,51 @@
+export const activities = [
+    {
+      id: "parachute-drop",
+      title: "Parachute Drop Challenge",
+      category: "Engineering + Physics",
+      difficulty: "Medium",
+      description: "Design and test a parachute to slow down a toy landing.",
+    },
+    {
+      id: "sound-pollution",
+      title: "Sound Pollution Hunter",
+      category: "Environmental Science",
+      difficulty: "Easy",
+      description: "Measure and compare sound levels in different locations.",
+    },
+    {
+      id: "hand-fan",
+      title: "Hand Fan Challenge",
+      category: "Physics – Air Movement",
+      difficulty: "Easy",
+      description: "Test how air movement affects flexible materials.",
+    },
+    {
+      id: "earthquake-structure",
+      title: "Earthquake-Resistant Structure",
+      category: "Engineering + Earth Science",
+      difficulty: "Medium",
+      description: "Build structures that can withstand vibration.",
+    },
+    {
+      id: "stretch-speed",
+      title: "Stretch Speed & Gracefulness",
+      category: "Medical Science + Biomechanics",
+      difficulty: "Medium",
+      description: "Measure smoothness and control during body movement.",
+    },
+    {
+      id: "reaction-board",
+      title: "Reaction Board Challenge",
+      category: "Neuroscience + Mathematics",
+      difficulty: "Easy",
+      description: "Measure reaction time and improvement through practice.",
+    },
+    {
+      id: "breathing-trainer",
+      title: "Breathing Pace Trainer",
+      category: "Medical Science",
+      difficulty: "Medium",
+      description: "Compare breathing patterns at rest and after exercise.",
+    },
+  ];
