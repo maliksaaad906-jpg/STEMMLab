@@ -8,13 +8,20 @@ export default function HomeScreen() {
       <Text style={styles.title}>STEMM Lab</Text>
       <Text style={styles.subtitle}>Choose an activity to begin</Text>
 
+      <TouchableOpacity
+        style={styles.historyButton}
+        onPress={() => router.push("/history" as any)}
+      >
+        <Text style={styles.historyButtonText}>View Activity History</Text>
+      </TouchableOpacity>
+
       {activities.map((activity) => (
         <TouchableOpacity
           key={activity.id}
           style={styles.card}
           onPress={() =>
             router.push({
-              pathname: "/activity/[id]",
+              pathname: "/activity/[id]" as any,
               params: { id: activity.id },
             })
           }
@@ -22,7 +29,9 @@ export default function HomeScreen() {
           <Text style={styles.cardTitle}>{activity.title}</Text>
           <Text style={styles.category}>{activity.category}</Text>
           <Text style={styles.description}>{activity.description}</Text>
-          <Text style={styles.difficulty}>Difficulty: {activity.difficulty}</Text>
+          <Text style={styles.difficulty}>
+            Difficulty: {activity.difficulty}
+          </Text>
         </TouchableOpacity>
       ))}
     </ScrollView>
@@ -47,6 +56,17 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "#555",
     marginBottom: 20,
+  },
+  historyButton: {
+    backgroundColor: "#111827",
+    padding: 14,
+    borderRadius: 12,
+    marginBottom: 20,
+  },
+  historyButtonText: {
+    color: "white",
+    textAlign: "center",
+    fontWeight: "bold",
   },
   card: {
     backgroundColor: "white",
