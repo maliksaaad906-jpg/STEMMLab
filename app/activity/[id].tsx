@@ -1,4 +1,5 @@
 import { useLocalSearchParams } from "expo-router";
+import { addDoc, collection } from "firebase/firestore";
 import { useState } from "react";
 import {
     Alert,
@@ -10,6 +11,7 @@ import {
     View,
 } from "react-native";
 import { activities } from "../../src/data/activities";
+import { auth, db } from "../../src/firebase/firebaseConfig";
 
 export default function ActivityDetailScreen() {
   const { id } = useLocalSearchParams();
@@ -27,19 +29,33 @@ export default function ActivityDetailScreen() {
     );
   }
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!prediction || !result) {
       Alert.alert("Missing information", "Please enter prediction and result.");
       return;
     }
-
-    Alert.alert("Saved", "Activity result recorded locally for now.");
-
-    setPrediction("");
-    setResult("");
-    setNotes("");
+  
+    try {
+      await addDoc(collection(db, "activities"), {
+        activityId: activity.id,
+        activityTitle: activity.title,
+        category: activity.category,
+        prediction,
+        result,
+        notes,
+        userId: auth.currentUser?.uid || "unknown",
+        createdAt: new Date(),
+      });
+  
+      Alert.alert("Saved", "Activity result saved to Firestore.");
+  
+      setPrediction("");
+      setResult("");
+      setNotes("");
+    } catch (error: any) {
+      Alert.alert("Save Error", error.message);
+    }
   };
-
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       <Text style={styles.title}>{activity.title}</Text>
