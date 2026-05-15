@@ -10,6 +10,7 @@ import {
     TouchableOpacity,
     View,
 } from "react-native";
+import ReactionGame from "../../src/components/ReactionGame";
 import { activities } from "../../src/data/activities";
 import { auth, db } from "../../src/firebase/firebaseConfig";
 
@@ -65,6 +66,10 @@ export default function ActivityDetailScreen() {
         <Text style={styles.sectionTitle}>Overview</Text>
         <Text style={styles.text}>{activity.description}</Text>
       </View>
+      {activity.id === "reaction-board" && (
+  <ReactionGame onResult={setResult} />
+)}
+
 
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Prediction</Text>
