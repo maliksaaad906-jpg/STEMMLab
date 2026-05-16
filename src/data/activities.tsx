@@ -5,6 +5,14 @@ export const activities = [
       category: "Engineering + Physics",
       difficulty: "Medium",
       description: "Design and test a parachute to slow down a toy landing.",
+      equipment: ["Mobile phone", "Small toy", "Paper or plastic", "String", "Tape", "Scissors"],
+      instructions: [
+        "Drop the toy without a parachute as a baseline test.",
+        "Build a parachute using available materials.",
+        "Drop the toy from the same height.",
+        "Record the fall time and landing result.",
+        "Improve the design and test again.",
+      ],
     },
     {
       id: "sound-pollution",
@@ -12,6 +20,14 @@ export const activities = [
       category: "Environmental Science",
       difficulty: "Easy",
       description: "Measure and compare sound levels in different locations.",
+      equipment: ["Mobile phone", "Classroom or outdoor area"],
+      instructions: [
+        "Choose a sound source or location.",
+        "Predict whether it will be loud or quiet.",
+        "Record or enter the sound level result.",
+        "Compare results from different actions or places.",
+        "Reflect on whether the sound level could affect health or concentration.",
+      ],
     },
     {
       id: "hand-fan",
@@ -19,6 +35,14 @@ export const activities = [
       category: "Physics – Air Movement",
       difficulty: "Easy",
       description: "Test how air movement affects flexible materials.",
+      equipment: ["Paper", "Cardboard", "Tape", "Scissors", "Mobile phone"],
+      instructions: [
+        "Create different fan designs.",
+        "Place paper upright on a table.",
+        "Fan from a fixed distance.",
+        "Measure or estimate the bend angle.",
+        "Compare how design and distance affect movement.",
+      ],
     },
     {
       id: "earthquake-structure",
@@ -26,6 +50,14 @@ export const activities = [
       category: "Engineering + Earth Science",
       difficulty: "Medium",
       description: "Build structures that can withstand vibration.",
+      equipment: ["Cardboard", "Paper", "Tape", "Cups", "Mobile phone"],
+      instructions: [
+        "Build a base structure using paper or cardboard.",
+        "Place the phone on top of the platform.",
+        "Apply vibration or shaking.",
+        "Record how much the structure moves.",
+        "Modify the structure to improve stability.",
+      ],
     },
     {
       id: "stretch-speed",
@@ -33,6 +65,14 @@ export const activities = [
       category: "Medical Science + Biomechanics",
       difficulty: "Medium",
       description: "Measure smoothness and control during body movement.",
+      equipment: ["Mobile phone", "Open safe space"],
+      instructions: [
+        "Hold the phone firmly.",
+        "Perform a slow controlled movement.",
+        "Record movement smoothness or vibration.",
+        "Repeat with a faster movement.",
+        "Compare control, speed, and coordination.",
+      ],
     },
     {
       id: "reaction-board",
@@ -40,6 +80,14 @@ export const activities = [
       category: "Neuroscience + Mathematics",
       difficulty: "Easy",
       description: "Measure reaction time and improvement through practice.",
+      equipment: ["Mobile phone", "Clear working space"],
+      instructions: [
+        "Press start and wait for the signal.",
+        "Tap as quickly as possible when prompted.",
+        "Record your reaction time.",
+        "Repeat and compare attempts.",
+        "Reflect on practice and concentration.",
+      ],
     },
     {
       id: "breathing-trainer",
@@ -47,5 +95,13 @@ export const activities = [
       category: "Medical Science",
       difficulty: "Medium",
       description: "Compare breathing patterns at rest and after exercise.",
+      equipment: ["Mobile phone", "Flat surface or mat", "Safe exercise space"],
+      instructions: [
+        "Record breathing at rest.",
+        "Complete light exercise.",
+        "Record breathing again.",
+        "Compare breathing rate before and after activity.",
+        "Reflect on how exercise affects oxygen demand.",
+      ],
     },
   ];

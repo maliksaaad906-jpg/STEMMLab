@@ -66,6 +66,21 @@ export default function ActivityDetailScreen() {
         <Text style={styles.sectionTitle}>Overview</Text>
         <Text style={styles.text}>{activity.description}</Text>
       </View>
+      <View style={styles.section}>
+  <Text style={styles.sectionTitle}>Equipment</Text>
+  {activity.equipment.map((item) => (
+    <Text key={item} style={styles.listItem}>• {item}</Text>
+  ))}
+</View>
+
+<View style={styles.section}>
+  <Text style={styles.sectionTitle}>Instructions</Text>
+  {activity.instructions.map((step, index) => (
+    <Text key={step} style={styles.listItem}>
+      {index + 1}. {step}
+    </Text>
+  ))}
+</View>
       {activity.id === "reaction-board" && (
   <ReactionGame onResult={setResult} />
 )}
@@ -122,6 +137,12 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+  },
+  listItem: {
+    fontSize: 15,
+    color: "#444",
+    lineHeight: 24,
+    marginBottom: 4,
   },
   title: {
     fontSize: 30,
