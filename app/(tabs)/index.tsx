@@ -25,6 +25,14 @@ export default function HomeScreen() {
           View GPS Map
         </Text>
       </TouchableOpacity>
+      <TouchableOpacity
+  style={styles.sensorButton}
+  onPress={() => router.push("/accelerometer" as any)}
+>
+  <Text style={styles.sensorButtonText}>
+    Open Accelerometer Sensor
+  </Text>
+</TouchableOpacity>
 
       {activities.map((activity) => (
         <TouchableOpacity
@@ -134,5 +142,17 @@ const styles = StyleSheet.create({
   difficulty: {
     marginTop: 10,
     fontWeight: "600",
+  },
+  sensorButton: {
+    backgroundColor: "#16A34A",
+    padding: 14,
+    borderRadius: 12,
+    marginBottom: 20,
+  },
+  
+  sensorButtonText: {
+    color: "white",
+    textAlign: "center",
+    fontWeight: "bold",
   },
 });
