@@ -35,7 +35,15 @@ export default function HomeScreen() {
       >
         <Text style={styles.buttonText}>Open Gyroscope Sensor</Text>
       </TouchableOpacity>
-
+      <TouchableOpacity
+        onPress={() => router.push("/notifications" as any)}
+        style={styles.notificationButton}
+      >
+        <Text style={styles.buttonText}>
+          Open Notifications
+        </Text>
+      
+      </TouchableOpacity>
       {activities.map((activity) => (
         <TouchableOpacity
           key={activity.id}
@@ -130,5 +138,11 @@ const styles = StyleSheet.create({
   difficulty: {
     marginTop: 10,
     fontWeight: "600",
+  },
+  notificationButton: {
+    backgroundColor: "#F97316",
+    padding: 14,
+    borderRadius: 12,
+    marginBottom: 20,
   },
 });
