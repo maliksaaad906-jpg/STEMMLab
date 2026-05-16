@@ -12,7 +12,18 @@ export default function HomeScreen() {
         style={styles.historyButton}
         onPress={() => router.push("/history" as any)}
       >
-        <Text style={styles.historyButtonText}>View Activity History</Text>
+        <Text style={styles.historyButtonText}>
+          View Activity History
+        </Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.mapButton}
+        onPress={() => router.push("/map" as any)}
+      >
+        <Text style={styles.mapButtonText}>
+          View GPS Map
+        </Text>
       </TouchableOpacity>
 
       {activities.map((activity) => (
@@ -26,9 +37,18 @@ export default function HomeScreen() {
             })
           }
         >
-          <Text style={styles.cardTitle}>{activity.title}</Text>
-          <Text style={styles.category}>{activity.category}</Text>
-          <Text style={styles.description}>{activity.description}</Text>
+          <Text style={styles.cardTitle}>
+            {activity.title}
+          </Text>
+
+          <Text style={styles.category}>
+            {activity.category}
+          </Text>
+
+          <Text style={styles.description}>
+            {activity.description}
+          </Text>
+
           <Text style={styles.difficulty}>
             Difficulty: {activity.difficulty}
           </Text>
@@ -43,51 +63,74 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#F4F7FB",
   },
+
   content: {
     padding: 20,
     paddingBottom: 40,
   },
+
   title: {
     fontSize: 34,
     fontWeight: "bold",
     marginTop: 20,
   },
+
   subtitle: {
     fontSize: 16,
     color: "#555",
     marginBottom: 20,
   },
+
   historyButton: {
     backgroundColor: "#111827",
     padding: 14,
     borderRadius: 12,
-    marginBottom: 20,
+    marginBottom: 12,
   },
+
   historyButtonText: {
     color: "white",
     textAlign: "center",
     fontWeight: "bold",
   },
+
+  mapButton: {
+    backgroundColor: "#2563EB",
+    padding: 14,
+    borderRadius: 12,
+    marginBottom: 20,
+  },
+
+  mapButtonText: {
+    color: "white",
+    textAlign: "center",
+    fontWeight: "bold",
+  },
+
   card: {
     backgroundColor: "white",
     padding: 18,
     borderRadius: 16,
     marginBottom: 14,
   },
+
   cardTitle: {
     fontSize: 20,
     fontWeight: "bold",
   },
+
   category: {
     color: "#2563EB",
     marginTop: 6,
     fontWeight: "600",
   },
+
   description: {
     color: "#555",
     marginTop: 8,
     lineHeight: 20,
   },
+
   difficulty: {
     marginTop: 10,
     fontWeight: "600",
