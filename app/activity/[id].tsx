@@ -1,11 +1,26 @@
 import { useLocalSearchParams } from "expo-router";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { addDoc, collection } from "firebase/firestore";
+import { useState } from "react";
+import {
+    Alert,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View,
+} from "react-native";
+import ReactionGame from "../../src/components/ReactionGame";
 import { activities } from "../../src/data/activities";
+import { auth, db } from "../../src/firebase/firebaseConfig";
 
 export default function ActivityDetailScreen() {
   const { id } = useLocalSearchParams();
-
   const activity = activities.find((item) => item.id === id);
+
+  const [prediction, setPrediction] = useState("");
+  const [result, setResult] = useState("");
+  const [notes, setNotes] = useState("");
 
   if (!activity) {
     return (
@@ -15,6 +30,33 @@ export default function ActivityDetailScreen() {
     );
   }
 
+  const handleSave = async () => {
+    if (!prediction || !result) {
+      Alert.alert("Missing information", "Please enter prediction and result.");
+      return;
+    }
+  
+    try {
+      await addDoc(collection(db, "activities"), {
+        activityId: activity.id,
+        activityTitle: activity.title,
+        category: activity.category,
+        prediction,
+        result,
+        notes,
+        userId: auth.currentUser?.uid || "unknown",
+        createdAt: new Date(),
+      });
+  
+      Alert.alert("Saved", "Activity result saved to Firestore.");
+  
+      setPrediction("");
+      setResult("");
+      setNotes("");
+    } catch (error: any) {
+      Alert.alert("Save Error", error.message);
+    }
+  };
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       <Text style={styles.title}>{activity.title}</Text>
@@ -24,19 +66,60 @@ export default function ActivityDetailScreen() {
         <Text style={styles.sectionTitle}>Overview</Text>
         <Text style={styles.text}>{activity.description}</Text>
       </View>
+      <View style={styles.section}>
+  <Text style={styles.sectionTitle}>Equipment</Text>
+  {activity.equipment.map((item) => (
+    <Text key={item} style={styles.listItem}>• {item}</Text>
+  ))}
+</View>
+
+<View style={styles.section}>
+  <Text style={styles.sectionTitle}>Instructions</Text>
+  {activity.instructions.map((step, index) => (
+    <Text key={step} style={styles.listItem}>
+      {index + 1}. {step}
+    </Text>
+  ))}
+</View>
+      {activity.id === "reaction-board" && (
+  <ReactionGame onResult={setResult} />
+)}
+
 
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Student Task</Text>
-        <Text style={styles.text}>
-          Complete the activity, record your prediction, collect your result,
-          and save your reflection.
-        </Text>
+        <Text style={styles.sectionTitle}>Prediction</Text>
+        <TextInput
+          placeholder="Example: I think this will take 3 seconds"
+          value={prediction}
+          onChangeText={setPrediction}
+          style={styles.input}
+        />
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Status</Text>
-        <Text style={styles.text}>Activity screen created successfully.</Text>
+        <Text style={styles.sectionTitle}>Result</Text>
+        <TextInput
+          placeholder="Example: 2.8 seconds / 65 dB / 30 degrees"
+          value={result}
+          onChangeText={setResult}
+          style={styles.input}
+        />
       </View>
+
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Reflection Notes</Text>
+        <TextInput
+          placeholder="What happened? Were you correct? Any surprises?"
+          value={notes}
+          onChangeText={setNotes}
+          style={[styles.input, styles.notesInput]}
+          multiline
+        />
+      </View>
+
+      <TouchableOpacity style={styles.button} onPress={handleSave}>
+        <Text style={styles.buttonText}>Save Activity Result</Text>
+      </TouchableOpacity>
     </ScrollView>
   );
 }
@@ -48,11 +131,18 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: 20,
+    paddingBottom: 40,
   },
   center: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+  },
+  listItem: {
+    fontSize: 15,
+    color: "#444",
+    lineHeight: 24,
+    marginBottom: 4,
   },
   title: {
     fontSize: 30,
@@ -73,11 +163,34 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 20,
     fontWeight: "bold",
-    marginBottom: 8,
+    marginBottom: 10,
   },
   text: {
     fontSize: 15,
     color: "#444",
     lineHeight: 22,
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: "#DDD",
+    borderRadius: 10,
+    padding: 14,
+    backgroundColor: "white",
+  },
+  notesInput: {
+    height: 120,
+    textAlignVertical: "top",
+  },
+  button: {
+    backgroundColor: "#111827",
+    padding: 18,
+    borderRadius: 14,
+    marginTop: 24,
+  },
+  buttonText: {
+    color: "white",
+    textAlign: "center",
+    fontWeight: "bold",
+    fontSize: 16,
   },
 });
