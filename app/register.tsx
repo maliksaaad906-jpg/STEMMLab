@@ -1,29 +1,30 @@
 import { useState } from "react";
 
 import {
-    Alert,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  ActivityIndicator,
+  Alert,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
 
 import {
-    createUserWithEmailAndPassword,
+  createUserWithEmailAndPassword,
 } from "firebase/auth";
 
 import {
-    doc,
-    setDoc,
+  doc,
+  setDoc,
 } from "firebase/firestore";
 
-import {
-    auth,
-    db,
-} from "../src/firebase/firebaseConfig";
-
 import { router } from "expo-router";
+
+import {
+  auth,
+  db,
+} from "../src/firebase/firebaseConfig";
 
 export default function RegisterScreen() {
   const [name, setName] = useState("");
@@ -33,36 +34,115 @@ export default function RegisterScreen() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  const [loading, setLoading] = useState(false);
+
+  const showMessage = (title: string, message: string) => {
+    if (typeof window !== "undefined") {
+      window.alert(`${title}: ${message}`);
+    } else {
+      Alert.alert(title, message);
+    }
+  };
+
+  const validateRegister = () => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (
+      !name.trim() ||
+      !team.trim() ||
+      !grade.trim() ||
+      !email.trim() ||
+      !password.trim()
+    ) {
+      showMessage(
+        "Validation Error",
+        "Please fill in all required fields."
+      );
+      return false;
+    }
+
+    if (!emailRegex.test(email)) {
+      showMessage(
+        "Validation Error",
+        "Please enter a valid email address."
+      );
+      return false;
+    }
+
+    if (password.length < 6) {
+      showMessage(
+        "Validation Error",
+        "Password must be at least 6 characters."
+      );
+      return false;
+    }
+
+    return true;
+  };
+
+  const getFirebaseErrorMessage = (code?: string) => {
+    switch (code) {
+      case "auth/email-already-in-use":
+        return "This email is already registered.";
+
+      case "auth/invalid-email":
+        return "The email address is invalid.";
+
+      case "auth/weak-password":
+        return "Password is too weak.";
+
+      case "auth/network-request-failed":
+        return "Network error. Please check your internet connection.";
+
+      default:
+        return "Registration failed. Please try again.";
+    }
+  };
+
   const handleRegister = async () => {
+    if (!validateRegister()) return;
+
+    setLoading(true);
+
     try {
       const userCredential =
         await createUserWithEmailAndPassword(
           auth,
-          email,
+          email.trim(),
           password
         );
 
       const uid = userCredential.user.uid;
 
       await setDoc(doc(db, "users", uid), {
-        name,
-        team,
-        grade,
-        email,
+        name: name.trim(),
+        team: team.trim(),
+        grade: grade.trim(),
+        email: email.trim(),
         createdAt: new Date(),
       });
 
-      Alert.alert("Success", "Account created!");
+      showMessage(
+        "Success",
+        "Account created successfully!"
+      );
 
       router.replace("/(tabs)");
     } catch (error: any) {
-      Alert.alert("Register Error", error.message);
+      showMessage(
+        "Register Error",
+        getFirebaseErrorMessage(error.code)
+      );
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Create Account</Text>
+      <Text style={styles.title}>
+        Create Account
+      </Text>
 
       <TextInput
         placeholder="Full Name"
@@ -90,6 +170,8 @@ export default function RegisterScreen() {
         style={styles.input}
         value={email}
         onChangeText={setEmail}
+        keyboardType="email-address"
+        autoCapitalize="none"
       />
 
       <TextInput
@@ -101,10 +183,20 @@ export default function RegisterScreen() {
       />
 
       <TouchableOpacity
-        style={styles.button}
+        style={[
+          styles.button,
+          loading && styles.disabledButton,
+        ]}
         onPress={handleRegister}
+        disabled={loading}
       >
-        <Text style={styles.buttonText}>Register</Text>
+        {loading ? (
+          <ActivityIndicator color="white" />
+        ) : (
+          <Text style={styles.buttonText}>
+            Register
+          </Text>
+        )}
       </TouchableOpacity>
     </View>
   );
@@ -136,6 +228,10 @@ const styles = StyleSheet.create({
     backgroundColor: "black",
     padding: 16,
     borderRadius: 10,
+  },
+
+  disabledButton: {
+    opacity: 0.6,
   },
 
   buttonText: {
