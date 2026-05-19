@@ -6,6 +6,7 @@ import 'react-native-reanimated';
 
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { initDatabase } from '../src/database';
+import { registerBackgroundTask } from '../src/taskManager';
 
 export const unstable_settings = {
   anchor: '(tabs)',
@@ -16,6 +17,7 @@ export default function RootLayout() {
 
   useEffect(() => {
     initDatabase();
+    registerBackgroundTask();
   }, []);
 
   return (
