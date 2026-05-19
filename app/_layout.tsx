@@ -5,6 +5,7 @@ import { useEffect } from 'react';
 import 'react-native-reanimated';
 
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import { optimizeBatteryUsage } from '../src/batteryOptimization';
 import { initDatabase } from '../src/database';
 import { registerBackgroundTask } from '../src/taskManager';
 
@@ -18,6 +19,7 @@ export default function RootLayout() {
   useEffect(() => {
     initDatabase();
     registerBackgroundTask();
+    optimizeBatteryUsage();
   }, []);
 
   return (
