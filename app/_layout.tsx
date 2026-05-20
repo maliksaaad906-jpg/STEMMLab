@@ -3,11 +3,11 @@ import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
+import "../src/taskManager";
 
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { optimizeBatteryUsage } from '../src/batteryOptimization';
 import { initDatabase } from '../src/database';
-import { registerBackgroundTask } from '../src/taskManager';
 
 export const unstable_settings = {
   anchor: '(tabs)',
@@ -18,7 +18,7 @@ export default function RootLayout() {
 
   useEffect(() => {
     initDatabase();
-    registerBackgroundTask();
+    //registerBackgroundTask();
     optimizeBatteryUsage();
   }, []);
 
