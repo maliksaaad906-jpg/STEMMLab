@@ -21,6 +21,7 @@ export default function ActivityDetailScreen() {
   const [prediction, setPrediction] = useState("");
   const [result, setResult] = useState("");
   const [notes, setNotes] = useState("");
+  const [saving, setSaving] = useState(false);
 
   if (!activity) {
     return (
@@ -31,32 +32,45 @@ export default function ActivityDetailScreen() {
   }
 
   const handleSave = async () => {
-    if (!prediction || !result) {
-      Alert.alert("Missing information", "Please enter prediction and result.");
+    if (!prediction.trim() || !result.trim()) {
+      Alert.alert(
+        "Missing information",
+        "Please enter both a prediction and a result before saving."
+      );
       return;
     }
-  
+
+    if (!auth.currentUser) {
+      Alert.alert("Not logged in", "Please log in before saving activity data.");
+      return;
+    }
+
     try {
+      setSaving(true);
+
       await addDoc(collection(db, "activities"), {
         activityId: activity.id,
         activityTitle: activity.title,
         category: activity.category,
-        prediction,
-        result,
-        notes,
-        userId: auth.currentUser?.uid || "unknown",
+        prediction: prediction.trim(),
+        result: result.trim(),
+        notes: notes.trim(),
+        userId: auth.currentUser.uid,
         createdAt: new Date(),
       });
-  
+
       Alert.alert("Saved", "Activity result saved to Firestore.");
-  
+
       setPrediction("");
       setResult("");
       setNotes("");
     } catch (error: any) {
       Alert.alert("Save Error", error.message);
+    } finally {
+      setSaving(false);
     }
   };
+
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       <Text style={styles.title}>{activity.title}</Text>
@@ -66,25 +80,26 @@ export default function ActivityDetailScreen() {
         <Text style={styles.sectionTitle}>Overview</Text>
         <Text style={styles.text}>{activity.description}</Text>
       </View>
+
       <View style={styles.section}>
-  <Text style={styles.sectionTitle}>Equipment</Text>
-  {activity.equipment.map((item) => (
-    <Text key={item} style={styles.listItem}>• {item}</Text>
-  ))}
-</View>
+        <Text style={styles.sectionTitle}>Equipment</Text>
+        {activity.equipment.map((item) => (
+          <Text key={item} style={styles.listItem}>
+            • {item}
+          </Text>
+        ))}
+      </View>
 
-<View style={styles.section}>
-  <Text style={styles.sectionTitle}>Instructions</Text>
-  {activity.instructions.map((step, index) => (
-    <Text key={step} style={styles.listItem}>
-      {index + 1}. {step}
-    </Text>
-  ))}
-</View>
-      {activity.id === "reaction-board" && (
-  <ReactionGame onResult={setResult} />
-)}
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Instructions</Text>
+        {activity.instructions.map((step, index) => (
+          <Text key={step} style={styles.listItem}>
+            {index + 1}. {step}
+          </Text>
+        ))}
+      </View>
 
+      {activity.id === "reaction-board" && <ReactionGame onResult={setResult} />}
 
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Prediction</Text>
@@ -117,8 +132,14 @@ export default function ActivityDetailScreen() {
         />
       </View>
 
-      <TouchableOpacity style={styles.button} onPress={handleSave}>
-        <Text style={styles.buttonText}>Save Activity Result</Text>
+      <TouchableOpacity
+        style={[styles.button, saving && styles.disabledButton]}
+        onPress={handleSave}
+        disabled={saving}
+      >
+        <Text style={styles.buttonText}>
+          {saving ? "Saving..." : "Save Activity Result"}
+        </Text>
       </TouchableOpacity>
     </ScrollView>
   );
@@ -186,6 +207,9 @@ const styles = StyleSheet.create({
     padding: 18,
     borderRadius: 14,
     marginTop: 24,
+  },
+  disabledButton: {
+    backgroundColor: "#9CA3AF",
   },
   buttonText: {
     color: "white",
