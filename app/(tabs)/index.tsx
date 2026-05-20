@@ -96,7 +96,6 @@ export default function HomeScreen() {
           Open Notifications
         </Text>
       </TouchableOpacity>
-
       {activities.map((activity) => (
         <TouchableOpacity
           key={activity.id}
@@ -220,5 +219,11 @@ const styles = StyleSheet.create({
   difficulty: {
     marginTop: 10,
     fontWeight: "600",
+  },
+  notificationButton: {
+    backgroundColor: "#F97316",
+    padding: 14,
+    borderRadius: 12,
+    marginBottom: 20,
   },
 });
