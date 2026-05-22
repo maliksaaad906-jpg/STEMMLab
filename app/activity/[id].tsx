@@ -1,3 +1,5 @@
+import { Ionicons } from "@expo/vector-icons";
+import { LinearGradient } from "expo-linear-gradient";
 import { useLocalSearchParams } from "expo-router";
 import { addDoc, collection } from "firebase/firestore";
 import { useState } from "react";
@@ -14,13 +16,11 @@ import {
 import GyroscopeTracker from "../../src/components/GyroscopeTracker";
 import ReactionGame from "../../src/components/ReactionGame";
 import StretchAttemptTracker from "../../src/components/StretchAttemptTracker";
-
 import { activities } from "../../src/data/activities";
 import { auth, db } from "../../src/firebase/firebaseConfig";
 
 export default function ActivityDetailScreen() {
   const { id } = useLocalSearchParams();
-
   const activity = activities.find((item) => item.id === id);
 
   const [prediction, setPrediction] = useState("");
@@ -42,16 +42,11 @@ export default function ActivityDetailScreen() {
         "Missing information",
         "Please enter both a prediction and a result before saving."
       );
-
       return;
     }
 
     if (!auth.currentUser) {
-      Alert.alert(
-        "Not logged in",
-        "Please log in before saving activity data."
-      );
-
+      Alert.alert("Not logged in", "Please log in before saving activity data.");
       return;
     }
 
@@ -69,10 +64,7 @@ export default function ActivityDetailScreen() {
         createdAt: new Date(),
       });
 
-      Alert.alert(
-        "Saved",
-        "Activity result saved to Firestore."
-      );
+      Alert.alert("Saved", "Activity result saved to Firestore.");
 
       setPrediction("");
       setResult("");
@@ -85,32 +77,26 @@ export default function ActivityDetailScreen() {
   };
 
   return (
-    <ScrollView
-      style={styles.container}
-      contentContainerStyle={styles.content}
-    >
-      <Text style={styles.title}>
-        🧪 {activity.title}
-      </Text>
-
-      <Text style={styles.category}>
-        {activity.category}
-      </Text>
+    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+      <LinearGradient colors={["#2563EB", "#1E40AF"]} style={styles.hero}>
+        <Text style={styles.heroTitle}>{activity.title}</Text>
+        <Text style={styles.heroCategory}>{activity.category}</Text>
+        <Text style={styles.heroDifficulty}>Difficulty: {activity.difficulty}</Text>
+      </LinearGradient>
 
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>
-          Overview
-        </Text>
-
-        <Text style={styles.text}>
-          {activity.description}
-        </Text>
+        <View style={styles.sectionHeader}>
+          <Ionicons name="information-circle" size={22} color="#2563EB" />
+          <Text style={styles.sectionTitle}>Overview</Text>
+        </View>
+        <Text style={styles.text}>{activity.description}</Text>
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>
-          Equipment
-        </Text>
+        <View style={styles.sectionHeader}>
+          <Ionicons name="construct" size={22} color="#16A34A" />
+          <Text style={styles.sectionTitle}>Equipment</Text>
+        </View>
 
         {activity.equipment.map((item) => (
           <Text key={item} style={styles.listItem}>
@@ -120,9 +106,10 @@ export default function ActivityDetailScreen() {
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>
-          Instructions
-        </Text>
+        <View style={styles.sectionHeader}>
+          <Ionicons name="list" size={22} color="#7C3AED" />
+          <Text style={styles.sectionTitle}>Instructions</Text>
+        </View>
 
         {activity.instructions.map((step, index) => (
           <Text key={step} style={styles.listItem}>
@@ -131,9 +118,7 @@ export default function ActivityDetailScreen() {
         ))}
       </View>
 
-      {activity.id === "reaction-board" && (
-        <ReactionGame onResult={setResult} />
-      )}
+      {activity.id === "reaction-board" && <ReactionGame onResult={setResult} />}
 
       {activity.id === "stretch-speed" && (
         <StretchAttemptTracker onResult={setResult} />
@@ -144,9 +129,10 @@ export default function ActivityDetailScreen() {
       )}
 
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>
-          Prediction
-        </Text>
+        <View style={styles.sectionHeader}>
+          <Ionicons name="bulb" size={22} color="#F97316" />
+          <Text style={styles.sectionTitle}>Prediction</Text>
+        </View>
 
         <TextInput
           placeholder="Example: I think this will take 3 seconds"
@@ -157,9 +143,10 @@ export default function ActivityDetailScreen() {
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>
-          Result
-        </Text>
+        <View style={styles.sectionHeader}>
+          <Ionicons name="analytics" size={22} color="#2563EB" />
+          <Text style={styles.sectionTitle}>Result</Text>
+        </View>
 
         <TextInput
           placeholder="Example: 2.8 seconds / 65 dB / 30 degrees"
@@ -170,9 +157,10 @@ export default function ActivityDetailScreen() {
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>
-          Reflection Notes
-        </Text>
+        <View style={styles.sectionHeader}>
+          <Ionicons name="chatbox-ellipses" size={22} color="#111827" />
+          <Text style={styles.sectionTitle}>Reflection Notes</Text>
+        </View>
 
         <TextInput
           placeholder="What happened? Were you correct? Any surprises?"
@@ -184,10 +172,7 @@ export default function ActivityDetailScreen() {
       </View>
 
       <TouchableOpacity
-        style={[
-          styles.button,
-          saving && styles.disabledButton,
-        ]}
+        style={[styles.button, saving && styles.disabledButton]}
         onPress={handleSave}
         disabled={saving}
       >
@@ -204,91 +189,88 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#F4F7FB",
   },
-
   content: {
     padding: 20,
     paddingBottom: 40,
   },
-
   center: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
   },
-
-  title: {
+  hero: {
+    borderRadius: 24,
+    padding: 24,
+    marginTop: 10,
+    marginBottom: 8,
+  },
+  heroTitle: {
     fontSize: 30,
     fontWeight: "bold",
-    marginTop: 20,
+    color: "white",
   },
-
-  category: {
-    color: "#2563EB",
-    fontWeight: "600",
+  heroCategory: {
+    color: "rgba(255,255,255,0.9)",
     marginTop: 8,
+    fontSize: 16,
   },
-
+  heroDifficulty: {
+    color: "white",
+    fontWeight: "bold",
+    marginTop: 12,
+  },
   section: {
     backgroundColor: "white",
     padding: 18,
-    borderRadius: 16,
+    borderRadius: 18,
     marginTop: 18,
-
     shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.05,
     shadowRadius: 4,
-
-    elevation: 2,
+    elevation: 3,
   },
-
+  sectionHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    marginBottom: 10,
+  },
   sectionTitle: {
     fontSize: 20,
     fontWeight: "bold",
-    marginBottom: 10,
   },
-
   text: {
     fontSize: 15,
     color: "#444",
     lineHeight: 22,
   },
-
   listItem: {
     fontSize: 15,
     color: "#444",
     lineHeight: 24,
     marginBottom: 4,
   },
-
   input: {
     borderWidth: 1,
     borderColor: "#DDD",
-    borderRadius: 10,
+    borderRadius: 12,
     padding: 14,
-    backgroundColor: "white",
+    backgroundColor: "#F9FAFB",
   },
-
   notesInput: {
     height: 120,
     textAlignVertical: "top",
   },
-
   button: {
     backgroundColor: "#111827",
     padding: 18,
-    borderRadius: 14,
+    borderRadius: 16,
     marginTop: 24,
   },
-
   disabledButton: {
     backgroundColor: "#9CA3AF",
   },
-
   buttonText: {
     color: "white",
     textAlign: "center",

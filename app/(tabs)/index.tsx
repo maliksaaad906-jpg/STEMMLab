@@ -1,6 +1,16 @@
 import { router } from "expo-router";
 import { useEffect } from "react";
-import { ScrollView, StyleSheet, Text, TouchableOpacity } from "react-native";
+
+import {
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+
+import { Ionicons } from "@expo/vector-icons";
+import { LinearGradient } from "expo-linear-gradient";
 
 import { activities } from "../../src/data/activities";
 
@@ -11,15 +21,13 @@ export default function HomeScreen() {
 
   const loadDashboardData = async () => {
     try {
-      const results = await Promise.all([
+      await Promise.all([
         fetchActivities(),
         fetchNotifications(),
         fetchHistory(),
       ]);
-
-      console.log("Parallel Programming Results:", results);
     } catch (error) {
-      console.log("Parallel Programming Error:", error);
+      console.log(error);
     }
   };
 
@@ -28,63 +36,116 @@ export default function HomeScreen() {
   const fetchHistory = async () => "History Loaded";
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      <Text style={styles.title}>🔬 STEMM Lab</Text>
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={styles.content}
+      showsVerticalScrollIndicator={false}
+    >
+      <LinearGradient
+        colors={["#2563EB", "#1E40AF"]}
+        style={styles.hero}
+      >
+        <Text style={styles.heroTitle}>
+          🔬 STEMM Lab
+        </Text>
 
-      <Text style={styles.subtitle}>
-        Interactive STEM learning activities using real mobile device features.
+        <Text style={styles.heroSubtitle}>
+          Interactive STEM activities powered by real mobile sensors.
+        </Text>
+      </LinearGradient>
+
+      <Text style={styles.sectionTitle}>
+        Quick Stats
       </Text>
 
-      <Text style={styles.sectionHeader}>Device Features</Text>
+      <View style={styles.statsRow}>
+        <View style={styles.statCard}>
+          <Ionicons name="flask" size={28} color="#2563EB" />
+          <Text style={styles.statNumber}>
+            {activities.length}
+          </Text>
+          <Text style={styles.statLabel}>
+            Activities
+          </Text>
+        </View>
 
-      <TouchableOpacity
-        style={styles.historyButton}
-        onPress={() => router.push("/history" as any)}
-      >
-        <Text style={styles.buttonText}>View Activity History</Text>
-      </TouchableOpacity>
+        <View style={styles.statCard}>
+          <Ionicons name="hardware-chip" size={28} color="#16A34A" />
+          <Text style={styles.statNumber}>
+            5+
+          </Text>
+          <Text style={styles.statLabel}>
+            Sensors
+          </Text>
+        </View>
 
-      <TouchableOpacity
-        style={styles.mapButton}
-        onPress={() => router.push("/map" as any)}
-      >
-        <Text style={styles.buttonText}>View GPS Map</Text>
-      </TouchableOpacity>
+        <View style={styles.statCard}>
+          <Ionicons name="cloud-done" size={28} color="#7C3AED" />
+          <Text style={styles.statNumber}>
+            Live
+          </Text>
+          <Text style={styles.statLabel}>
+            Firebase
+          </Text>
+        </View>
+      </View>
 
-      <TouchableOpacity
-        style={styles.sensorButton}
-        onPress={() => router.push("/accelerometer" as any)}
-      >
-        <Text style={styles.buttonText}>Open Accelerometer Sensor</Text>
-      </TouchableOpacity>
+      <Text style={styles.sectionTitle}>
+        Device Features
+      </Text>
 
-      <TouchableOpacity
-        style={styles.gyroButton}
-        onPress={() => router.push("/gyroscope" as any)}
-      >
-        <Text style={styles.buttonText}>Open Gyroscope Sensor</Text>
-      </TouchableOpacity>
+      <View style={styles.featureGrid}>
+        <FeatureButton
+          icon="map"
+          label="GPS"
+          color="#2563EB"
+          onPress={() => router.push("/map" as any)}
+        />
 
-      <TouchableOpacity
-        style={styles.notificationButton}
-        onPress={() => router.push("/notifications" as any)}
-      >
-        <Text style={styles.buttonText}>Open Notifications</Text>
-      </TouchableOpacity>
+        <FeatureButton
+          icon="pulse"
+          label="Motion"
+          color="#16A34A"
+          onPress={() => router.push("/accelerometer" as any)}
+        />
 
-      <TouchableOpacity
-        style={styles.torchButton}
-        onPress={() => router.push("/torch" as any)}
-      >
-        <Text style={styles.buttonText}>Open Torch Control</Text>
-      </TouchableOpacity>
+        <FeatureButton
+          icon="refresh"
+          label="Gyroscope"
+          color="#7C3AED"
+          onPress={() => router.push("/gyroscope" as any)}
+        />
 
-      <Text style={styles.sectionHeader}>STEM Activities</Text>
+        <FeatureButton
+          icon="flashlight"
+          label="Torch"
+          color="#DC2626"
+          onPress={() => router.push("/torch" as any)}
+        />
+
+        <FeatureButton
+          icon="notifications"
+          label="Alerts"
+          color="#F97316"
+          onPress={() => router.push("/notifications" as any)}
+        />
+
+        <FeatureButton
+          icon="time"
+          label="History"
+          color="#111827"
+          onPress={() => router.push("/history" as any)}
+        />
+      </View>
+
+      <Text style={styles.sectionTitle}>
+        STEM Activities
+      </Text>
 
       {activities.map((activity) => (
         <TouchableOpacity
           key={activity.id}
-          style={styles.card}
+          style={styles.activityCard}
           onPress={() =>
             router.push({
               pathname: "/activity/[id]" as any,
@@ -92,13 +153,56 @@ export default function HomeScreen() {
             })
           }
         >
-          <Text style={styles.cardTitle}>🧪 {activity.title}</Text>
-          <Text style={styles.category}>{activity.category}</Text>
-          <Text style={styles.description}>{activity.description}</Text>
-          <Text style={styles.difficulty}>Difficulty: {activity.difficulty}</Text>
+          <View style={styles.activityHeader}>
+            <Text style={styles.activityTitle}>
+              🧪 {activity.title}
+            </Text>
+
+            <Ionicons
+              name="chevron-forward"
+              size={22}
+              color="#999"
+            />
+          </View>
+
+          <Text style={styles.category}>
+            {activity.category}
+          </Text>
+
+          <Text style={styles.description}>
+            {activity.description}
+          </Text>
+
+          <Text style={styles.difficulty}>
+            Difficulty: {activity.difficulty}
+          </Text>
         </TouchableOpacity>
       ))}
     </ScrollView>
+  );
+}
+
+function FeatureButton({
+  icon,
+  label,
+  color,
+  onPress,
+}: any) {
+  return (
+    <TouchableOpacity
+      style={styles.featureButton}
+      onPress={onPress}
+    >
+      <Ionicons
+        name={icon}
+        size={26}
+        color={color}
+      />
+
+      <Text style={styles.featureLabel}>
+        {label}
+      </Text>
+    </TouchableOpacity>
   );
 }
 
@@ -107,95 +211,152 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#F4F7FB",
   },
+
   content: {
     padding: 20,
     paddingBottom: 40,
   },
-  title: {
+
+  hero: {
+    borderRadius: 24,
+    padding: 24,
+    marginTop: 10,
+    marginBottom: 24,
+  },
+
+  heroTitle: {
     fontSize: 34,
     fontWeight: "bold",
-    marginTop: 20,
+    color: "white",
   },
-  subtitle: {
-    fontSize: 16,
-    color: "#555",
-    marginBottom: 22,
+
+  heroSubtitle: {
+    color: "rgba(255,255,255,0.9)",
+    marginTop: 10,
     lineHeight: 22,
+    fontSize: 16,
   },
-  sectionHeader: {
-    fontSize: 22,
+
+  sectionTitle: {
+    fontSize: 24,
     fontWeight: "bold",
-    marginBottom: 14,
+    marginBottom: 16,
+    marginTop: 10,
+  },
+
+  statsRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 28,
+  },
+
+  statCard: {
+    backgroundColor: "white",
+    width: "31%",
+    borderRadius: 18,
+    padding: 18,
+    alignItems: "center",
+
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+
+    elevation: 3,
+  },
+
+  statNumber: {
+    fontSize: 24,
+    fontWeight: "bold",
     marginTop: 8,
   },
-  historyButton: {
-    backgroundColor: "#111827",
-    padding: 14,
-    borderRadius: 12,
-    marginBottom: 12,
+
+  statLabel: {
+    color: "#666",
+    marginTop: 4,
   },
-  mapButton: {
-    backgroundColor: "#2563EB",
-    padding: 14,
-    borderRadius: 12,
-    marginBottom: 12,
+
+  featureGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
+    marginBottom: 28,
   },
-  sensorButton: {
-    backgroundColor: "#16A34A",
-    padding: 14,
-    borderRadius: 12,
-    marginBottom: 12,
-  },
-  gyroButton: {
-    backgroundColor: "#7C3AED",
-    padding: 14,
-    borderRadius: 12,
-    marginBottom: 12,
-  },
-  notificationButton: {
-    backgroundColor: "#F97316",
-    padding: 14,
-    borderRadius: 12,
-    marginBottom: 12,
-  },
-  torchButton: {
-    backgroundColor: "#DC2626",
-    padding: 14,
-    borderRadius: 12,
-    marginBottom: 22,
-  },
-  buttonText: {
-    color: "white",
-    textAlign: "center",
-    fontWeight: "bold",
-  },
-  card: {
+
+  featureButton: {
+    width: "31%",
     backgroundColor: "white",
-    padding: 18,
     borderRadius: 18,
-    marginBottom: 16,
+    paddingVertical: 20,
+    alignItems: "center",
+    marginBottom: 14,
+
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.08,
-    shadowRadius: 4.65,
-    elevation: 4,
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+
+    elevation: 3,
   },
-  cardTitle: {
-    fontSize: 20,
-    fontWeight: "bold",
-  },
-  category: {
-    color: "#2563EB",
-    marginTop: 6,
+
+  featureLabel: {
+    marginTop: 10,
     fontWeight: "600",
   },
+
+  activityCard: {
+    backgroundColor: "white",
+    padding: 18,
+    borderRadius: 20,
+    marginBottom: 18,
+
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+
+    elevation: 3,
+  },
+
+  activityHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+
+  activityTitle: {
+    fontSize: 20,
+    fontWeight: "bold",
+    flex: 1,
+    marginRight: 12,
+  },
+
+  category: {
+    color: "#2563EB",
+    marginTop: 8,
+    fontWeight: "600",
+  },
+
   description: {
     color: "#555",
-    marginTop: 8,
-    lineHeight: 20,
-  },
-  difficulty: {
     marginTop: 10,
+    lineHeight: 22,
+  },
+
+  difficulty: {
+    marginTop: 12,
     fontWeight: "600",
   },
 });
