@@ -10,12 +10,17 @@ import {
     TouchableOpacity,
     View,
 } from "react-native";
+
+import GyroscopeTracker from "../../src/components/GyroscopeTracker";
 import ReactionGame from "../../src/components/ReactionGame";
+import StretchAttemptTracker from "../../src/components/StretchAttemptTracker";
+
 import { activities } from "../../src/data/activities";
 import { auth, db } from "../../src/firebase/firebaseConfig";
 
 export default function ActivityDetailScreen() {
   const { id } = useLocalSearchParams();
+
   const activity = activities.find((item) => item.id === id);
 
   const [prediction, setPrediction] = useState("");
@@ -37,11 +42,16 @@ export default function ActivityDetailScreen() {
         "Missing information",
         "Please enter both a prediction and a result before saving."
       );
+
       return;
     }
 
     if (!auth.currentUser) {
-      Alert.alert("Not logged in", "Please log in before saving activity data.");
+      Alert.alert(
+        "Not logged in",
+        "Please log in before saving activity data."
+      );
+
       return;
     }
 
@@ -59,7 +69,10 @@ export default function ActivityDetailScreen() {
         createdAt: new Date(),
       });
 
-      Alert.alert("Saved", "Activity result saved to Firestore.");
+      Alert.alert(
+        "Saved",
+        "Activity result saved to Firestore."
+      );
 
       setPrediction("");
       setResult("");
@@ -72,17 +85,33 @@ export default function ActivityDetailScreen() {
   };
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      <Text style={styles.title}>{activity.title}</Text>
-      <Text style={styles.category}>{activity.category}</Text>
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={styles.content}
+    >
+      <Text style={styles.title}>
+        🧪 {activity.title}
+      </Text>
+
+      <Text style={styles.category}>
+        {activity.category}
+      </Text>
 
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Overview</Text>
-        <Text style={styles.text}>{activity.description}</Text>
+        <Text style={styles.sectionTitle}>
+          Overview
+        </Text>
+
+        <Text style={styles.text}>
+          {activity.description}
+        </Text>
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Equipment</Text>
+        <Text style={styles.sectionTitle}>
+          Equipment
+        </Text>
+
         {activity.equipment.map((item) => (
           <Text key={item} style={styles.listItem}>
             • {item}
@@ -91,7 +120,10 @@ export default function ActivityDetailScreen() {
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Instructions</Text>
+        <Text style={styles.sectionTitle}>
+          Instructions
+        </Text>
+
         {activity.instructions.map((step, index) => (
           <Text key={step} style={styles.listItem}>
             {index + 1}. {step}
@@ -99,10 +131,23 @@ export default function ActivityDetailScreen() {
         ))}
       </View>
 
-      {activity.id === "reaction-board" && <ReactionGame onResult={setResult} />}
+      {activity.id === "reaction-board" && (
+        <ReactionGame onResult={setResult} />
+      )}
+
+      {activity.id === "stretch-speed" && (
+        <StretchAttemptTracker onResult={setResult} />
+      )}
+
+      {activity.id === "earthquake-structure" && (
+        <GyroscopeTracker onResult={setResult} />
+      )}
 
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Prediction</Text>
+        <Text style={styles.sectionTitle}>
+          Prediction
+        </Text>
+
         <TextInput
           placeholder="Example: I think this will take 3 seconds"
           value={prediction}
@@ -112,7 +157,10 @@ export default function ActivityDetailScreen() {
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Result</Text>
+        <Text style={styles.sectionTitle}>
+          Result
+        </Text>
+
         <TextInput
           placeholder="Example: 2.8 seconds / 65 dB / 30 degrees"
           value={result}
@@ -122,7 +170,10 @@ export default function ActivityDetailScreen() {
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Reflection Notes</Text>
+        <Text style={styles.sectionTitle}>
+          Reflection Notes
+        </Text>
+
         <TextInput
           placeholder="What happened? Were you correct? Any surprises?"
           value={notes}
@@ -133,7 +184,10 @@ export default function ActivityDetailScreen() {
       </View>
 
       <TouchableOpacity
-        style={[styles.button, saving && styles.disabledButton]}
+        style={[
+          styles.button,
+          saving && styles.disabledButton,
+        ]}
         onPress={handleSave}
         disabled={saving}
       >
@@ -150,47 +204,67 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#F4F7FB",
   },
+
   content: {
     padding: 20,
     paddingBottom: 40,
   },
+
   center: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
   },
+
+  title: {
+    fontSize: 30,
+    fontWeight: "bold",
+    marginTop: 20,
+  },
+
+  category: {
+    color: "#2563EB",
+    fontWeight: "600",
+    marginTop: 8,
+  },
+
+  section: {
+    backgroundColor: "white",
+    padding: 18,
+    borderRadius: 16,
+    marginTop: 18,
+
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+
+    elevation: 2,
+  },
+
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: "bold",
+    marginBottom: 10,
+  },
+
+  text: {
+    fontSize: 15,
+    color: "#444",
+    lineHeight: 22,
+  },
+
   listItem: {
     fontSize: 15,
     color: "#444",
     lineHeight: 24,
     marginBottom: 4,
   },
-  title: {
-    fontSize: 30,
-    fontWeight: "bold",
-    marginTop: 20,
-  },
-  category: {
-    color: "#2563EB",
-    fontWeight: "600",
-    marginTop: 8,
-  },
-  section: {
-    backgroundColor: "white",
-    padding: 18,
-    borderRadius: 16,
-    marginTop: 18,
-  },
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: "bold",
-    marginBottom: 10,
-  },
-  text: {
-    fontSize: 15,
-    color: "#444",
-    lineHeight: 22,
-  },
+
   input: {
     borderWidth: 1,
     borderColor: "#DDD",
@@ -198,19 +272,23 @@ const styles = StyleSheet.create({
     padding: 14,
     backgroundColor: "white",
   },
+
   notesInput: {
     height: 120,
     textAlignVertical: "top",
   },
+
   button: {
     backgroundColor: "#111827",
     padding: 18,
     borderRadius: 14,
     marginTop: 24,
   },
+
   disabledButton: {
     backgroundColor: "#9CA3AF",
   },
+
   buttonText: {
     color: "white",
     textAlign: "center",
