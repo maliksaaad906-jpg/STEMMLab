@@ -1,6 +1,5 @@
-import { Audio } from "expo-av";
 import * as Location from "expo-location";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import {
     Alert,
     StyleSheet,
@@ -16,139 +15,124 @@ type Props = {
 
 type Attempt = {
   action: string;
-  soundLevel: number;
+  prediction: string;
+  db: number;
   gps: string;
+  risk: string;
 };
 
-export default function SoundPollutionHunter({ onResult }: Props) {
-  const recordingRef = useRef<Audio.Recording | null>(null);
-  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
-
+export default function SoundPollutionHunter({
+  onResult,
+}: Props) {
   const [prediction, setPrediction] = useState("");
   const [action, setAction] = useState("");
-  const [currentLevel, setCurrentLevel] = useState(0);
-  const [recording, setRecording] = useState(false);
+  const [db, setDb] = useState("");
   const [attempts, setAttempts] = useState<Attempt[]>([]);
 
-  const startMeasuring = async () => {
-    if (!action.trim()) {
-      Alert.alert("Missing action", "Enter the sound action first.");
-      return;
-    }
-
-    const permission = await Audio.requestPermissionsAsync();
-
-    if (!permission.granted) {
-      Alert.alert("Permission denied", "Microphone permission is required.");
-      return;
-    }
-
-    await Audio.setAudioModeAsync({
-      allowsRecordingIOS: true,
-      playsInSilentModeIOS: true,
-    });
-
-    const recordingObject = new Audio.Recording();
-
-    await recordingObject.prepareToRecordAsync({
-      android: {
-        extension: ".m4a",
-        outputFormat: 2,
-        audioEncoder: 3,
-        sampleRate: 44100,
-        numberOfChannels: 1,
-        bitRate: 128000,
-        meteringEnabled: true,
-      },
-      ios: {
-        extension: ".m4a",
-        audioQuality: 2,
-        sampleRate: 44100,
-        numberOfChannels: 1,
-        bitRate: 128000,
-        linearPCMBitDepth: 16,
-        linearPCMIsBigEndian: false,
-        linearPCMIsFloat: false,
-        meteringEnabled: true,
-      },
-    } as any);
-
-    await recordingObject.startAsync();
-    recordingRef.current = recordingObject;
-    setRecording(true);
-
-    intervalRef.current = setInterval(async () => {
-      if (!recordingRef.current) return;
-
-      const status = await recordingRef.current.getStatusAsync();
-
-      if ("metering" in status && typeof status.metering === "number") {
-        const approxDb = Math.max(0, Math.round(status.metering + 160));
-        setCurrentLevel(approxDb);
-      }
-    }, 500);
+  const getRisk = (value: number) => {
+    if (value < 30) return "No risk";
+    if (value < 60) return "Safe for long periods";
+    if (value < 85) return "Fatigue possible";
+    if (value < 100) return "Hearing damage possible";
+    if (value < 120) return "Serious hearing damage possible";
+    return "Immediate hearing damage risk";
   };
 
-  const stopAndSaveAttempt = async () => {
-    if (!recordingRef.current) return;
+  const captureAttempt = async () => {
+    const parsedDb = Number(db);
 
-    if (intervalRef.current) {
-      clearInterval(intervalRef.current);
+    if (!action.trim() || !parsedDb) {
+      Alert.alert(
+        "Missing information",
+        "Enter action and sound level."
+      );
+      return;
     }
 
-    await recordingRef.current.stopAndUnloadAsync();
-    recordingRef.current = null;
-    setRecording(false);
-
-    let gps = "GPS not captured";
+    let gps = "Unavailable";
 
     try {
-      const { status } = await Location.requestForegroundPermissionsAsync();
+      const permission =
+        await Location.requestForegroundPermissionsAsync();
 
-      if (status === "granted") {
-        const location = await Location.getCurrentPositionAsync({
-          accuracy: Location.Accuracy.High,
-        });
+      if (permission.status === "granted") {
+        const location =
+          await Location.getCurrentPositionAsync({
+            accuracy: Location.Accuracy.High,
+          });
 
-        gps = `${location.coords.latitude.toFixed(6)}, ${location.coords.longitude.toFixed(6)}`;
+          const addressResult = await Location.reverseGeocodeAsync({
+            latitude: location.coords.latitude,
+            longitude: location.coords.longitude,
+          });
+          
+          const place = addressResult[0];
+          
+          const address = place
+            ? [
+                place.name,
+                place.city,
+                place.region,
+                
+              ]
+                .filter(Boolean)
+                .join(", ")
+            : "Address unavailable";
+          
+          gps = address;
       }
-    } catch {
-      gps = "GPS unavailable";
-    }
+    } catch {}
+
+    const risk = getRisk(parsedDb);
 
     const newAttempt: Attempt = {
-      action: action.trim(),
-      soundLevel: currentLevel,
+      action,
+      prediction,
+      db: parsedDb,
       gps,
+      risk,
     };
 
-    const updatedAttempts = [...attempts, newAttempt];
-    setAttempts(updatedAttempts);
+    const updated = [...attempts, newAttempt];
+    setAttempts(updated);
 
-    const loudest = updatedAttempts.reduce((highest, item) =>
-      item.soundLevel > highest.soundLevel ? item : highest
+    const loudest = updated.reduce((best, item) =>
+      item.db > best.db ? item : best
     );
 
     const summary = [
       `Prediction: ${prediction || "Not entered"}`,
-      ...updatedAttempts.map(
+      ...updated.map(
         (item, index) =>
-          `Attempt ${index + 1}: ${item.action} = ${item.soundLevel} dB at ${item.gps}`
+          `${index + 1}. ${item.action} = ${
+            item.db
+          } dB | Location: ${item.gps} | Risk: ${item.risk}`
       ),
-      `Loudest action: ${loudest.action} (${loudest.soundLevel} dB)`,
+      `Loudest action: ${loudest.action} (${loudest.db} dB)`,
+      `Prediction correct: ${
+        prediction.toLowerCase() ===
+        loudest.action.toLowerCase()
+          ? "Yes"
+          : "No"
+      }`,
     ].join(" | ");
 
     onResult(summary);
+
     setAction("");
-    setCurrentLevel(0);
+    setDb("");
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Sound Pollution Hunter</Text>
+      <Text style={styles.title}>
+        🔊 Sound Pollution Hunter
+      </Text>
 
       <Text style={styles.info}>
-        Measure sound from different actions, compare results, and identify the loudest source.
+        Measure classroom sound levels, compare
+        loudness, map locations, and investigate
+        hearing safety.
       </Text>
 
       <TextInput
@@ -159,29 +143,42 @@ export default function SoundPollutionHunter({ onResult }: Props) {
       />
 
       <TextInput
-        placeholder="Action e.g. dropping a book, talking, stamping"
+        placeholder="Action e.g. dropping book"
         value={action}
         onChangeText={setAction}
         style={styles.input}
       />
 
-      <Text style={styles.level}>{currentLevel} dB</Text>
+      <TextInput
+        placeholder="Measured sound level in dB"
+        value={db}
+        onChangeText={setDb}
+        keyboardType="decimal-pad"
+        style={styles.input}
+      />
 
       <TouchableOpacity
-        style={[styles.button, recording && styles.stopButton]}
-        onPress={recording ? stopAndSaveAttempt : startMeasuring}
+        style={styles.button}
+        onPress={captureAttempt}
       >
         <Text style={styles.buttonText}>
-          {recording ? "Stop & Save Attempt" : "Start Measuring"}
+          Save Sound Test
         </Text>
       </TouchableOpacity>
 
-      {attempts.map((attempt, index) => (
-        <View key={`${attempt.action}-${index}`} style={styles.attemptCard}>
-          <Text style={styles.attemptTitle}>Attempt {index + 1}</Text>
-          <Text>Action: {attempt.action}</Text>
-          <Text>Sound Level: {attempt.soundLevel} dB</Text>
-          <Text>GPS: {attempt.gps}</Text>
+      {attempts.map((item, index) => (
+        <View
+          key={`${item.action}-${index}`}
+          style={styles.card}
+        >
+          <Text style={styles.cardTitle}>
+            Action {index + 1}
+          </Text>
+
+          <Text>Action: {item.action}</Text>
+          <Text>Sound: {item.db} dB</Text>
+          <Text>Location: {item.gps}</Text>
+          <Text>Risk: {item.risk}</Text>
         </View>
       ))}
     </View>
@@ -195,16 +192,19 @@ const styles = StyleSheet.create({
     borderRadius: 18,
     marginTop: 18,
   },
+
   title: {
     fontSize: 20,
     fontWeight: "900",
     marginBottom: 8,
   },
+
   info: {
     color: "#555",
     lineHeight: 21,
     marginBottom: 12,
   },
+
   input: {
     borderWidth: 1,
     borderColor: "#DDD",
@@ -213,33 +213,27 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     backgroundColor: "#F9FAFB",
   },
-  level: {
-    fontSize: 42,
-    fontWeight: "900",
-    color: "#DC2626",
-    textAlign: "center",
-    marginVertical: 12,
-  },
+
   button: {
-    backgroundColor: "#16A34A",
+    backgroundColor: "#2563EB",
     padding: 14,
     borderRadius: 12,
   },
-  stopButton: {
-    backgroundColor: "#DC2626",
-  },
+
   buttonText: {
     color: "white",
     textAlign: "center",
     fontWeight: "800",
   },
-  attemptCard: {
+
+  card: {
     marginTop: 14,
     backgroundColor: "#F1F5F9",
     padding: 14,
     borderRadius: 14,
   },
-  attemptTitle: {
+
+  cardTitle: {
     fontWeight: "900",
     marginBottom: 6,
   },

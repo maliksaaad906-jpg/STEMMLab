@@ -15,6 +15,7 @@ import {
 } from "react-native";
 
 import GyroscopeTracker from "../../src/components/GyroscopeTracker";
+import ParachuteChallenge from "../../src/components/ParachuteChallenge";
 import ReactionGame from "../../src/components/ReactionGame";
 import SoundPollutionHunter from "../../src/components/SoundPollutionHunter";
 import StretchAttemptTracker from "../../src/components/StretchAttemptTracker";
@@ -131,34 +132,42 @@ export default function ActivityDetailScreen() {
       )}
       {activity.id === "sound-pollution" && (
   <SoundPollutionHunter onResult={setResult} />
+     )}
+     {activity.id === "parachute-drop" && (
+       <ParachuteChallenge onResult={setResult} />
+     )}     
+
+{activity.id !== "sound-pollution" && (
+  <View style={styles.section}>
+    <View style={styles.sectionHeader}>
+      <Ionicons name="bulb" size={22} color="#F97316" />
+      <Text style={styles.sectionTitle}>Prediction</Text>
+    </View>
+
+    <TextInput
+      placeholder="Example: I think this will take 3 seconds"
+      value={prediction}
+      onChangeText={setPrediction}
+      style={styles.input}
+    />
+  </View>
 )}
 
       <View style={styles.section}>
         <View style={styles.sectionHeader}>
-          <Ionicons name="bulb" size={22} color="#F97316" />
-          <Text style={styles.sectionTitle}>Prediction</Text>
-        </View>
-
-        <TextInput
-          placeholder="Example: I think this will take 3 seconds"
-          value={prediction}
-          onChangeText={setPrediction}
-          style={styles.input}
-        />
-      </View>
-
-      <View style={styles.section}>
-        <View style={styles.sectionHeader}>
           <Ionicons name="analytics" size={22} color="#2563EB" />
-          <Text style={styles.sectionTitle}>Result</Text>
+          <Text style={styles.sectionTitle}>Calculated Result</Text>
         </View>
-
-        <TextInput
-          placeholder="Example: 2.8 seconds / 65 dB / 30 degrees"
-          value={result}
-          onChangeText={setResult}
-          style={styles.input}
-        />
+      
+        {result ? (
+          <View style={styles.resultBox}>
+            <Text style={styles.resultText}>{result}</Text>
+          </View>
+        ) : (
+          <Text style={styles.emptyResultText}>
+            Complete the activity tool above to generate results.
+          </Text>
+        )}
       </View>
 
       <View style={styles.section}>
@@ -281,5 +290,21 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontWeight: "bold",
     fontSize: 16,
+  },
+  resultBox: {
+    backgroundColor: "#EEF4FF",
+    borderRadius: 14,
+    padding: 14,
+  },
+  
+  resultText: {
+    color: "#1E3A8A",
+    lineHeight: 22,
+    fontWeight: "600",
+  },
+  
+  emptyResultText: {
+    color: "#777",
+    lineHeight: 22,
   },
 });
