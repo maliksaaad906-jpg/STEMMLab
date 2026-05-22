@@ -3,6 +3,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { useLocalSearchParams } from "expo-router";
 import { addDoc, collection } from "firebase/firestore";
 import { useState } from "react";
+
 import {
     Alert,
     ScrollView,
@@ -15,6 +16,7 @@ import {
 
 import GyroscopeTracker from "../../src/components/GyroscopeTracker";
 import ReactionGame from "../../src/components/ReactionGame";
+import SoundPollutionHunter from "../../src/components/SoundPollutionHunter";
 import StretchAttemptTracker from "../../src/components/StretchAttemptTracker";
 import { activities } from "../../src/data/activities";
 import { auth, db } from "../../src/firebase/firebaseConfig";
@@ -127,6 +129,9 @@ export default function ActivityDetailScreen() {
       {activity.id === "earthquake-structure" && (
         <GyroscopeTracker onResult={setResult} />
       )}
+      {activity.id === "sound-pollution" && (
+  <SoundPollutionHunter onResult={setResult} />
+)}
 
       <View style={styles.section}>
         <View style={styles.sectionHeader}>
