@@ -3,13 +3,11 @@ import { LinearGradient } from "expo-linear-gradient";
 import { useLocalSearchParams } from "expo-router";
 import { addDoc, collection } from "firebase/firestore";
 import { useState } from "react";
-
 import {
     Alert,
     ScrollView,
     StyleSheet,
     Text,
-    TextInput,
     TouchableOpacity,
     View,
 } from "react-native";
@@ -23,14 +21,11 @@ import StretchAttemptTracker from "../../src/components/StretchAttemptTracker";
 import { activities } from "../../src/data/activities";
 import { auth, db } from "../../src/firebase/firebaseConfig";
 
-
 export default function ActivityDetailScreen() {
   const { id } = useLocalSearchParams();
   const activity = activities.find((item) => item.id === id);
 
-  const [prediction, setPrediction] = useState("");
   const [result, setResult] = useState("");
-  const [notes, setNotes] = useState("");
   const [saving, setSaving] = useState(false);
 
   if (!activity) {
@@ -42,10 +37,10 @@ export default function ActivityDetailScreen() {
   }
 
   const handleSave = async () => {
-    if (!prediction.trim() || !result.trim()) {
+    if (!result.trim()) {
       Alert.alert(
-        "Missing information",
-        "Please enter both a prediction and a result before saving."
+        "Missing result",
+        "Complete the activity tool to generate a result before saving."
       );
       return;
     }
@@ -62,18 +57,13 @@ export default function ActivityDetailScreen() {
         activityId: activity.id,
         activityTitle: activity.title,
         category: activity.category,
-        prediction: prediction.trim(),
         result: result.trim(),
-        notes: notes.trim(),
         userId: auth.currentUser.uid,
         createdAt: new Date(),
       });
 
       Alert.alert("Saved", "Activity result saved to Firestore.");
-
-      setPrediction("");
       setResult("");
-      setNotes("");
     } catch (error: any) {
       Alert.alert("Save Error", error.message);
     } finally {
@@ -129,41 +119,28 @@ export default function ActivityDetailScreen() {
         <StretchAttemptTracker onResult={setResult} />
       )}
 
-    {activity.id === "earthquake-structure" && (
-      <EarthquakeStructureLab onResult={setResult} />
-    )}    
+      {activity.id === "earthquake-structure" && (
+        <EarthquakeStructureLab onResult={setResult} />
+      )}
+
       {activity.id === "sound-pollution" && (
-  <SoundPollutionHunter onResult={setResult} />
-     )}
-     {activity.id === "parachute-drop" && (
-       <ParachuteChallenge onResult={setResult} />
-     )} 
-     {activity.id === "hand-fan" && (
-  <HandFanChallenge onResult={setResult} />
-)}    
+        <SoundPollutionHunter onResult={setResult} />
+      )}
 
-{activity.id !== "sound-pollution" && (
-  <View style={styles.section}>
-    <View style={styles.sectionHeader}>
-      <Ionicons name="bulb" size={22} color="#F97316" />
-      <Text style={styles.sectionTitle}>Prediction</Text>
-    </View>
+      {activity.id === "parachute-drop" && (
+        <ParachuteChallenge onResult={setResult} />
+      )}
 
-    <TextInput
-      placeholder="Example: I think this will take 3 seconds"
-      value={prediction}
-      onChangeText={setPrediction}
-      style={styles.input}
-    />
-  </View>
-)}
+      {activity.id === "hand-fan" && (
+        <HandFanChallenge onResult={setResult} />
+      )}
 
       <View style={styles.section}>
         <View style={styles.sectionHeader}>
           <Ionicons name="analytics" size={22} color="#2563EB" />
           <Text style={styles.sectionTitle}>Calculated Result</Text>
         </View>
-      
+
         {result ? (
           <View style={styles.resultBox}>
             <Text style={styles.resultText}>{result}</Text>
@@ -173,21 +150,6 @@ export default function ActivityDetailScreen() {
             Complete the activity tool above to generate results.
           </Text>
         )}
-      </View>
-
-      <View style={styles.section}>
-        <View style={styles.sectionHeader}>
-          <Ionicons name="chatbox-ellipses" size={22} color="#111827" />
-          <Text style={styles.sectionTitle}>Reflection Notes</Text>
-        </View>
-
-        <TextInput
-          placeholder="What happened? Were you correct? Any surprises?"
-          value={notes}
-          onChangeText={setNotes}
-          style={[styles.input, styles.notesInput]}
-          multiline
-        />
       </View>
 
       <TouchableOpacity
@@ -270,17 +232,6 @@ const styles = StyleSheet.create({
     lineHeight: 24,
     marginBottom: 4,
   },
-  input: {
-    borderWidth: 1,
-    borderColor: "#DDD",
-    borderRadius: 12,
-    padding: 14,
-    backgroundColor: "#F9FAFB",
-  },
-  notesInput: {
-    height: 120,
-    textAlignVertical: "top",
-  },
   button: {
     backgroundColor: "#111827",
     padding: 18,
@@ -301,13 +252,11 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     padding: 14,
   },
-  
   resultText: {
     color: "#1E3A8A",
     lineHeight: 22,
     fontWeight: "600",
   },
-  
   emptyResultText: {
     color: "#777",
     lineHeight: 22,
