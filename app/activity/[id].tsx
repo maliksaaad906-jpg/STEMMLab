@@ -155,7 +155,11 @@ export default function ActivityDetailScreen() {
 
         {result ? (
           <View style={styles.resultBox}>
-            <Text style={styles.resultText}>{result}</Text>
+            {result.split(" | ").map((line, index) => (
+  <Text key={`${line}-${index}`} style={styles.resultLine}>
+    • {line}
+  </Text>
+))}
           </View>
         ) : (
           <Text style={styles.emptyResultText}>
@@ -291,5 +295,11 @@ const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: "#F4F7FB",
+  },
+  resultLine: {
+    color: "#1E3A8A",
+    lineHeight: 24,
+    fontWeight: "600",
+    marginBottom: 6,
   },
 });
