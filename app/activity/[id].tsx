@@ -14,13 +14,15 @@ import {
     View,
 } from "react-native";
 
-import GyroscopeTracker from "../../src/components/GyroscopeTracker";
+import EarthquakeStructureLab from "../../src/components/EarthquakeStructureLab";
+import HandFanChallenge from "../../src/components/HandFanChallenge";
 import ParachuteChallenge from "../../src/components/ParachuteChallenge";
 import ReactionGame from "../../src/components/ReactionGame";
 import SoundPollutionHunter from "../../src/components/SoundPollutionHunter";
 import StretchAttemptTracker from "../../src/components/StretchAttemptTracker";
 import { activities } from "../../src/data/activities";
 import { auth, db } from "../../src/firebase/firebaseConfig";
+
 
 export default function ActivityDetailScreen() {
   const { id } = useLocalSearchParams();
@@ -127,15 +129,18 @@ export default function ActivityDetailScreen() {
         <StretchAttemptTracker onResult={setResult} />
       )}
 
-      {activity.id === "earthquake-structure" && (
-        <GyroscopeTracker onResult={setResult} />
-      )}
+    {activity.id === "earthquake-structure" && (
+      <EarthquakeStructureLab onResult={setResult} />
+    )}    
       {activity.id === "sound-pollution" && (
   <SoundPollutionHunter onResult={setResult} />
      )}
      {activity.id === "parachute-drop" && (
        <ParachuteChallenge onResult={setResult} />
-     )}     
+     )} 
+     {activity.id === "hand-fan" && (
+  <HandFanChallenge onResult={setResult} />
+)}    
 
 {activity.id !== "sound-pollution" && (
   <View style={styles.section}>
