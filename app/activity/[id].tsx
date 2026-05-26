@@ -4,14 +4,15 @@ import { useLocalSearchParams } from "expo-router";
 import { addDoc, collection } from "firebase/firestore";
 import { useState } from "react";
 import {
-    Alert,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  Alert,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
 
+import BreathingPaceTrainer from "../../src/components/BreathingPaceTrainer";
 import EarthquakeStructureLab from "../../src/components/EarthquakeStructureLab";
 import HandFanChallenge from "../../src/components/HandFanChallenge";
 import ParachuteChallenge from "../../src/components/ParachuteChallenge";
@@ -134,6 +135,9 @@ export default function ActivityDetailScreen() {
       {activity.id === "hand-fan" && (
         <HandFanChallenge onResult={setResult} />
       )}
+      {activity.id === "breathing-trainer" && (
+        <BreathingPaceTrainer onResult={setResult} />
+      ) } 
 
       <View style={styles.section}>
         <View style={styles.sectionHeader}>
