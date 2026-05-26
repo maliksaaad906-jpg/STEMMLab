@@ -2,10 +2,12 @@ import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { activities } from "../../src/data/activities";
 
 export default function HomeScreen() {
   return (
+    <SafeAreaView style={styles.safeArea}>
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       <LinearGradient colors={["#0F172A", "#2563EB"]} style={styles.hero}>
         <Text style={styles.heroTitle}>STEMM Lab</Text>
@@ -59,6 +61,7 @@ export default function HomeScreen() {
         ))}
       </View>
     </ScrollView>
+    </SafeAreaView>
   );
 }
 
@@ -168,5 +171,9 @@ const styles = StyleSheet.create({
     fontWeight: "800",
     color: "#0F172A",
     fontSize: 12,
+  },
+  safeArea: {
+    flex: 1,
+    backgroundColor: "#F4F7FB",
   },
 });

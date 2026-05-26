@@ -1,8 +1,10 @@
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
-import { useLocalSearchParams } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { addDoc, collection } from "firebase/firestore";
 import { useState } from "react";
+import { SafeAreaView } from "react-native-safe-area-context";
+
 import {
   Alert,
   ScrollView,
@@ -73,7 +75,11 @@ export default function ActivityDetailScreen() {
   };
 
   return (
+    <SafeAreaView style={styles.safeArea}>
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+      <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
+        <Text style={styles.backButtonText}>← Back</Text>
+      </TouchableOpacity>      
       <LinearGradient colors={["#2563EB", "#1E40AF"]} style={styles.hero}>
         <Text style={styles.heroTitle}>{activity.title}</Text>
         <Text style={styles.heroCategory}>{activity.category}</Text>
@@ -168,6 +174,7 @@ export default function ActivityDetailScreen() {
         </Text>
       </TouchableOpacity>
     </ScrollView>
+    </SafeAreaView>
   );
 }
 
@@ -266,5 +273,23 @@ const styles = StyleSheet.create({
   emptyResultText: {
     color: "#777",
     lineHeight: 22,
+  },
+  backButton: {
+    backgroundColor: "white",
+    alignSelf: "flex-start",
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: 999,
+    marginTop: 2,
+    marginBottom: 12,
+  },
+  
+  backButtonText: {
+    fontWeight: "900",
+    color: "#111827",
+  },
+  safeArea: {
+    flex: 1,
+    backgroundColor: "#F4F7FB",
   },
 });
