@@ -16,7 +16,7 @@ import BreathingPaceTrainer from "../../src/components/BreathingPaceTrainer";
 import EarthquakeStructureLab from "../../src/components/EarthquakeStructureLab";
 import HandFanChallenge from "../../src/components/HandFanChallenge";
 import ParachuteChallenge from "../../src/components/ParachuteChallenge";
-import ReactionGame from "../../src/components/ReactionGame";
+import ReactionBoardLab from "../../src/components/ReactionBoardLab";
 import SoundPollutionHunter from "../../src/components/SoundPollutionHunter";
 import StretchAttemptTracker from "../../src/components/StretchAttemptTracker";
 import { activities } from "../../src/data/activities";
@@ -114,7 +114,9 @@ export default function ActivityDetailScreen() {
         ))}
       </View>
 
-      {activity.id === "reaction-board" && <ReactionGame onResult={setResult} />}
+      {activity.id === "reaction-board" && (
+         <ReactionBoardLab onResult={setResult} />
+       )}
 
       {activity.id === "stretch-speed" && (
         <StretchAttemptTracker onResult={setResult} />
