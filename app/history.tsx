@@ -1,4 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
+import { router } from "expo-router";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import {
@@ -6,6 +7,7 @@ import {
     ScrollView,
     StyleSheet,
     Text,
+    TouchableOpacity,
     View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -75,6 +77,12 @@ export default function HistoryScreen() {
 
   return (
     <SafeAreaView style={styles.safeArea}>
+        <TouchableOpacity
+  style={styles.backButton}
+  onPress={() => router.back()}
+>
+  <Text style={styles.backButtonText}>← Back</Text>
+</TouchableOpacity>
       <ScrollView style={styles.container} contentContainerStyle={styles.content}>
         <Text style={styles.title}>Activity History</Text>
         <Text style={styles.subtitle}>
@@ -134,6 +142,7 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: 20,
+    paddingTop: 0,
     paddingBottom: 40,
   },
   center: {
@@ -149,7 +158,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 34,
     fontWeight: "900",
-    marginTop: 10,
+    marginTop: 1,
   },
   subtitle: {
     color: "#555",
@@ -232,5 +241,18 @@ const styles = StyleSheet.create({
   resultText: {
     color: "#334155",
     lineHeight: 21,
+  },
+  backButton: {
+    backgroundColor: "white",
+    alignSelf: "flex-start",
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: 999,
+    marginBottom: 14,
+  },
+  
+  backButtonText: {
+    fontWeight: "900",
+    color: "#111827",
   },
 });

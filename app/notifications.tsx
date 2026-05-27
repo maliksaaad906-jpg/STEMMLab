@@ -1,5 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import * as Notifications from "expo-notifications";
+import { router } from "expo-router";
 import { useEffect } from "react";
 import {
   Alert,
@@ -77,6 +78,12 @@ export default function NotificationsScreen() {
 
   return (
     <SafeAreaView style={styles.safeArea}>
+      <TouchableOpacity
+  style={styles.backButton}
+  onPress={() => router.back()}
+>
+  <Text style={styles.backButtonText}>← Back</Text>
+</TouchableOpacity>
       <ScrollView style={styles.container} contentContainerStyle={styles.content}>
         <Text style={styles.title}>STEM Reminders</Text>
         <Text style={styles.subtitle}>
@@ -173,5 +180,18 @@ const styles = StyleSheet.create({
     color: "white",
     textAlign: "center",
     fontWeight: "800",
+  },
+  backButton: {
+    backgroundColor: "white",
+    alignSelf: "flex-start",
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: 999,
+    marginBottom: 14,
+  },
+  
+  backButtonText: {
+    fontWeight: "900",
+    color: "#111827",
   },
 });

@@ -1,20 +1,32 @@
 import * as Location from "expo-location";
+import { router } from "expo-router";
 import { useEffect, useState } from "react";
-import { Alert, StyleSheet, Text, View } from "react-native";
+import {
+    Alert,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
+} from "react-native";
 import MapView, { Marker } from "react-native-maps";
 
 export default function MapScreen() {
-  const [coords, setCoords] = useState<Location.LocationObjectCoords | null>(null);
+  const [coords, setCoords] =
+    useState<Location.LocationObjectCoords | null>(null);
   const [error, setError] = useState("");
 
   useEffect(() => {
     const getLocation = async () => {
       try {
-        const { status } = await Location.requestForegroundPermissionsAsync();
+        const { status } =
+          await Location.requestForegroundPermissionsAsync();
 
         if (status !== "granted") {
           setError("Location permission was denied.");
-          Alert.alert("Permission denied", "Location permission is required.");
+          Alert.alert(
+            "Permission denied",
+            "Location permission is required."
+          );
           return;
         }
 
@@ -34,6 +46,13 @@ export default function MapScreen() {
   if (error) {
     return (
       <View style={styles.center}>
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={() => router.back()}
+        >
+          <Text style={styles.backButtonText}>← Back</Text>
+        </TouchableOpacity>
+
         <Text style={styles.title}>GPS Error</Text>
         <Text style={styles.note}>{error}</Text>
       </View>
@@ -43,6 +62,13 @@ export default function MapScreen() {
   if (!coords) {
     return (
       <View style={styles.center}>
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={() => router.back()}
+        >
+          <Text style={styles.backButtonText}>← Back</Text>
+        </TouchableOpacity>
+
         <Text style={styles.title}>Loading GPS Map...</Text>
         <Text style={styles.note}>Please allow location permission.</Text>
       </View>
@@ -58,7 +84,18 @@ export default function MapScreen() {
 
   return (
     <View style={styles.container}>
-      <MapView style={styles.map} initialRegion={region} showsUserLocation>
+      <TouchableOpacity
+        style={styles.backButton}
+        onPress={() => router.back()}
+      >
+        <Text style={styles.backButtonText}>← Back</Text>
+      </TouchableOpacity>
+
+      <MapView
+        style={styles.map}
+        initialRegion={region}
+        showsUserLocation
+      >
         <Marker
           coordinate={{
             latitude: coords.latitude,
@@ -71,8 +108,12 @@ export default function MapScreen() {
 
       <View style={styles.infoCard}>
         <Text style={styles.cardTitle}>Current GPS Location</Text>
-        <Text style={styles.info}>Lat: {coords.latitude.toFixed(6)}</Text>
-        <Text style={styles.info}>Lng: {coords.longitude.toFixed(6)}</Text>
+        <Text style={styles.info}>
+          Lat: {coords.latitude.toFixed(6)}
+        </Text>
+        <Text style={styles.info}>
+          Lng: {coords.longitude.toFixed(6)}
+        </Text>
         <Text style={styles.info}>
           Accuracy: {coords.accuracy?.toFixed(1) ?? "Unknown"} m
         </Text>
@@ -82,8 +123,14 @@ export default function MapScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1 },
-  map: { flex: 1 },
+  container: {
+    flex: 1,
+  },
+
+  map: {
+    flex: 1,
+  },
+
   center: {
     flex: 1,
     backgroundColor: "#F4F7FB",
@@ -91,16 +138,39 @@ const styles = StyleSheet.create({
     alignItems: "center",
     padding: 20,
   },
+
+  backButton: {
+    position: "absolute",
+    top: 60,
+    left: 20,
+    zIndex: 10,
+    backgroundColor: "white",
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 999,
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+    elevation: 4,
+  },
+
+  backButtonText: {
+    fontWeight: "900",
+    color: "#111827",
+  },
+
   title: {
     fontSize: 26,
     fontWeight: "900",
     marginBottom: 10,
   },
+
   note: {
     color: "#555",
     textAlign: "center",
     lineHeight: 22,
   },
+
   infoCard: {
     position: "absolute",
     bottom: 30,
@@ -114,11 +184,13 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 5,
   },
+
   cardTitle: {
     fontSize: 18,
     fontWeight: "900",
     marginBottom: 8,
   },
+
   info: {
     color: "#444",
     marginTop: 4,
