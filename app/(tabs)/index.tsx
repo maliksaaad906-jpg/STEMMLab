@@ -17,17 +17,17 @@ export default function HomeScreen() {
       </LinearGradient>
 
       <View style={styles.quickRow}>
-        <TouchableOpacity style={styles.quickCard} onPress={() => router.push("/history" as any)}>
+        <TouchableOpacity style={styles.quickCard} onPress={() => router.push("/history")}>
           <Ionicons name="time" size={24} color="#2563EB" />
           <Text style={styles.quickText}>History</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.quickCard} onPress={() => router.push("/map" as any)}>
+        <TouchableOpacity style={styles.quickCard} onPress={() => router.push("/map")}>
           <Ionicons name="map" size={24} color="#16A34A" />
           <Text style={styles.quickText}>GPS Map</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.quickCard} onPress={() => router.push("/notifications" as any)}>
+        <TouchableOpacity style={styles.quickCard} onPress={() => router.push("/notifications")}>
           <Ionicons name="notifications" size={24} color="#F97316" />
           <Text style={styles.quickText}>Alerts</Text>
         </TouchableOpacity>
@@ -42,7 +42,7 @@ export default function HomeScreen() {
             style={styles.tile}
             onPress={() =>
               router.push({
-                pathname: "/activity/[id]" as any,
+                pathname: "/activity/[id]",
                 params: { id: activity.id },
               })
             }

@@ -3,7 +3,7 @@ import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
-import "../src/taskManager";
+//import "../src/taskManager";
 
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { optimizeBatteryUsage } from '../src/batteryOptimization';
@@ -31,8 +31,8 @@ export default function RootLayout() {
         <Stack.Screen name="activity/[id]" options={{ headerShown: false }} />
         <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
         <Stack.Screen name="history" options={{ headerShown: false }} />
-<Stack.Screen name="notifications" options={{ headerShown: false }} />
-<Stack.Screen name="map" options={{ headerShown: false }} />
+        <Stack.Screen name="notifications" options={{ headerShown: false }} />
+        <Stack.Screen name="map" options={{ headerShown: false }} />
       </Stack>
       <StatusBar style="auto" />
     </ThemeProvider>

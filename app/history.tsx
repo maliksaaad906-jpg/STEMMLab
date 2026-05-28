@@ -1,6 +1,11 @@
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
-import { collection, getDocs, query, where } from "firebase/firestore";
+import {
+    collection,
+    getDocs,
+    query,
+    where,
+} from "firebase/firestore";
 import { useEffect, useState } from "react";
 import {
     ActivityIndicator,
@@ -47,7 +52,14 @@ export default function HistoryScreen() {
         ...(doc.data() as Omit<ActivityResult, "id">),
       }));
 
-      setResults(data.reverse());
+      const sortedData = data.sort((a, b) => {
+        const dateA = a.createdAt?.toDate?.()?.getTime?.() || 0;
+        const dateB = b.createdAt?.toDate?.()?.getTime?.() || 0;
+      
+        return dateB - dateA;
+      });
+      
+      setResults(sortedData);
     } catch (error) {
       console.log("History fetch error:", error);
     } finally {
@@ -69,7 +81,9 @@ export default function HistoryScreen() {
       <SafeAreaView style={styles.safeArea}>
         <View style={styles.center}>
           <ActivityIndicator size="large" />
-          <Text style={styles.loadingText}>Loading activity history...</Text>
+          <Text style={styles.loadingText}>
+            Loading activity history...
+          </Text>
         </View>
       </SafeAreaView>
     );
@@ -77,24 +91,38 @@ export default function HistoryScreen() {
 
   return (
     <SafeAreaView style={styles.safeArea}>
+      <ScrollView
+        style={styles.container}
+        contentContainerStyle={styles.content}
+      >
         <TouchableOpacity
-  style={styles.backButton}
-  onPress={() => router.back()}
->
-  <Text style={styles.backButtonText}>← Back</Text>
-</TouchableOpacity>
-      <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+          style={styles.backButton}
+          onPress={() => router.back()}
+        >
+          <Text style={styles.backButtonText}>← Back</Text>
+        </TouchableOpacity>
+
         <Text style={styles.title}>Activity History</Text>
+
         <Text style={styles.subtitle}>
           Saved STEMM Lab experiment results from Firestore.
         </Text>
 
         {results.length === 0 ? (
           <View style={styles.emptyCard}>
-            <Ionicons name="folder-open" size={36} color="#94A3B8" />
-            <Text style={styles.emptyTitle}>No results saved yet</Text>
+            <Ionicons
+              name="folder-open"
+              size={36}
+              color="#94A3B8"
+            />
+
+            <Text style={styles.emptyTitle}>
+              No results saved yet
+            </Text>
+
             <Text style={styles.emptyText}>
-              Complete an activity and press save to see it here.
+              Complete an activity and press save to
+              see it here.
             </Text>
           </View>
         ) : (
@@ -102,26 +130,53 @@ export default function HistoryScreen() {
             <View key={item.id} style={styles.card}>
               <View style={styles.cardHeader}>
                 <View style={styles.iconCircle}>
-                  <Ionicons name="flask" size={22} color="#2563EB" />
+                  <Ionicons
+                    name="flask"
+                    size={22}
+                    color="#2563EB"
+                  />
                 </View>
 
                 <View style={{ flex: 1 }}>
-                  <Text style={styles.cardTitle}>{item.activityTitle}</Text>
-                  <Text style={styles.dateText}>{formatDate(item.createdAt)}</Text>
+                  <Text style={styles.cardTitle}>
+                    {item.activityTitle}
+                  </Text>
+
+                  <Text style={styles.dateText}>
+                    {formatDate(item.createdAt)}
+                  </Text>
                 </View>
               </View>
 
               {item.category ? (
                 <View style={styles.badge}>
-                  <Text style={styles.badgeText}>{item.category}</Text>
+                  <Text style={styles.badgeText}>
+                    {item.category}
+                  </Text>
                 </View>
               ) : null}
 
               <View style={styles.resultBox}>
-                <Text style={styles.resultLabel}>Calculated Result</Text>
-                <Text style={styles.resultText}>
-                  {item.result || "No result data available"}
+                <Text style={styles.resultLabel}>
+                  Calculated Result
                 </Text>
+
+                {item.result ? (
+                  item.result
+                    .split(" | ")
+                    .map((line, index) => (
+                      <Text
+                        key={`${line}-${index}`}
+                        style={styles.resultLine}
+                      >
+                        • {line}
+                      </Text>
+                    ))
+                ) : (
+                  <Text style={styles.resultText}>
+                    No result data available
+                  </Text>
+                )}
               </View>
             </View>
           ))
@@ -136,53 +191,75 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#F4F7FB",
   },
+
   container: {
     flex: 1,
     backgroundColor: "#F4F7FB",
   },
+
   content: {
     padding: 20,
-    paddingTop: 0,
     paddingBottom: 40,
   },
+
   center: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "#F4F7FB",
   },
+
   loadingText: {
     marginTop: 12,
     color: "#555",
   },
+
+  backButton: {
+    backgroundColor: "white",
+    alignSelf: "flex-start",
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 999,
+    marginBottom: 8,
+  },
+
+  backButtonText: {
+    fontWeight: "900",
+    color: "#111827",
+  },
+
   title: {
     fontSize: 34,
     fontWeight: "900",
-    marginTop: 1,
   },
+
   subtitle: {
     color: "#555",
     marginTop: 6,
     marginBottom: 20,
     lineHeight: 22,
   },
+
   emptyCard: {
     backgroundColor: "white",
     padding: 24,
     borderRadius: 22,
     alignItems: "center",
   },
+
   emptyTitle: {
     fontSize: 20,
     fontWeight: "900",
     marginTop: 12,
   },
+
   emptyText: {
     color: "#555",
     textAlign: "center",
     marginTop: 6,
     lineHeight: 21,
   },
+
   card: {
     backgroundColor: "white",
     padding: 18,
@@ -193,11 +270,13 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 3,
   },
+
   cardHeader: {
     flexDirection: "row",
     alignItems: "center",
     gap: 12,
   },
+
   iconCircle: {
     width: 44,
     height: 44,
@@ -206,15 +285,18 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
+
   cardTitle: {
     fontSize: 18,
     fontWeight: "900",
   },
+
   dateText: {
     color: "#64748B",
     marginTop: 4,
     fontSize: 12,
   },
+
   badge: {
     alignSelf: "flex-start",
     backgroundColor: "#EEF4FF",
@@ -223,36 +305,33 @@ const styles = StyleSheet.create({
     borderRadius: 999,
     marginTop: 14,
   },
+
   badgeText: {
     color: "#2563EB",
     fontWeight: "800",
     fontSize: 12,
   },
+
   resultBox: {
     backgroundColor: "#F8FAFC",
     padding: 14,
     borderRadius: 16,
     marginTop: 14,
   },
+
   resultLabel: {
     fontWeight: "900",
     marginBottom: 6,
   },
+
+  resultLine: {
+    color: "#334155",
+    lineHeight: 22,
+    marginBottom: 6,
+  },
+
   resultText: {
     color: "#334155",
     lineHeight: 21,
-  },
-  backButton: {
-    backgroundColor: "white",
-    alignSelf: "flex-start",
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    borderRadius: 999,
-    marginBottom: 14,
-  },
-  
-  backButtonText: {
-    fontWeight: "900",
-    color: "#111827",
   },
 });

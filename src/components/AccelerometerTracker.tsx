@@ -23,17 +23,19 @@ export default function AccelerometerTracker({ onResult }: Props) {
         const movement =
           Math.abs(data.x) + Math.abs(data.y) + Math.abs(data.z);
 
-        if (movement > maxMovement) {
-          setMaxMovement(movement);
+        setMaxMovement((previous) => {
+          if (movement <= previous) return previous;
+
           onResult(`Max movement: ${movement.toFixed(2)}`);
-        }
+          return movement;
+        });
       });
     }
 
     return () => {
       if (subscription) subscription.remove();
     };
-  }, [tracking, maxMovement]);
+  }, [tracking, onResult]);
 
   const startTracking = () => {
     setMaxMovement(0);
