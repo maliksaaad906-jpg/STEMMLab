@@ -3,6 +3,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import BannerAdCard from "../../src/components/BannerAdCard";
 import { activities } from "../../src/data/activities";
 
 export default function HomeScreen() {
@@ -15,6 +16,7 @@ export default function HomeScreen() {
           Real-world science challenges using sensors, GPS, Firebase, and mobile tools.
         </Text>
       </LinearGradient>
+      <BannerAdCard />
 
       <View style={styles.quickRow}>
         <TouchableOpacity style={styles.quickCard} onPress={() => router.push("/history")}>

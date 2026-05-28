@@ -3,7 +3,6 @@ import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
-//import "../src/taskManager";
 
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { optimizeBatteryUsage } from '../src/batteryOptimization';
